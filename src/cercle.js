@@ -13,7 +13,7 @@ export default class Circle {
         this.startX = ((this.i % this.columns) + 1) * (window.innerWidth / (columns + 1));
         this.startY = (Math.floor(this.i / this.columns) + 1) * (window.innerHeight / (rows + 1));
 
-        this.x = this.startX; // initialize so draw() never gets NaN before first update
+        this.x = this.startX;
         this.y = this.startY;
 
         this.A = 0;
@@ -29,15 +29,19 @@ export default class Circle {
         this.snapY = this.startY;
         this.drawX = this.startX;
         this.drawY = this.startY;
-        this.speedBack = 0.05;
-        this.disparition = 0.5;
-        this.border = `rgb(0, 15, 195)`;
-        this.middle = `rgb(91, 132, 255)`;
-        this.center = `rgb(180, 240, 255)`;
+        // this.speedBack = 0.05;
+        // this.disparition = 0.5;
+
+        // this.border = `rgb(0, 15, 195)`;
+        // this.middle = `rgb(91, 132, 255)`;
+        // this.center = `rgb(180, 240, 255)`;
+
         this.appearance = 0.5;
+
         this.returning = false;
         this.dragging = false; // true once threshold is passed
         this.threshold = 60;  // px to drag before snapping
+
         this.dragSpeed = 0.01;
         this.followSpeed = 0.15;
         this.hovered = false;
@@ -98,7 +102,7 @@ export default class Circle {
 
     release() {
         if (this.dragging) {
-            // was dragged past threshold, spring back
+            // au delà du threshold, retour ressort
             this.returning = true;
             this.A = Math.sqrt(
                 Math.pow(this.drawX - this.startX, 2) +
@@ -110,7 +114,7 @@ export default class Circle {
     }
 
     drawBase() {
-        // solid black circle to block joints underneath
+        // cache des joints sous l'atome
         this.ctx.globalCompositeOperation = "source-over";
         this.ctx.fillStyle = "black";
         this.ctx.beginPath();

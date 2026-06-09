@@ -12,9 +12,6 @@ import { UI, measureUnderlineThickness } from "./ui.js";
 loadAllSounds();
 // const audio = new Audio('disparition.wav'); 
 
-// ─── Fonts ───────────────────────────────────────────────────────────────────
-// Préchargement des fonts depuis public/font/
-
 const FONTS = {
   "EurocatBase Light": "/font/EurocatBase-Light.otf",
   "Eurocat Light": "/font/Eurocat-Light.otf",
@@ -37,6 +34,8 @@ const FONTS = {
 
 // ─── GUI ─────────────────────────────────────────────────────────────────────
 
+const SHOW_GUI = false; // ← true pour afficher le panneau dat.gui, false pour le cacher
+
 const gui = new dat.GUI();
 
 // ─── Canvases ─────────────────────────────────────────────────────────────────
@@ -57,6 +56,7 @@ const ctx = canvas.getContext("2d");
 
 gui.domElement.parentElement.style.zIndex = "2";
 gui.domElement.parentElement.style.position = "relative";
+gui.domElement.parentElement.style.display = SHOW_GUI ? "" : "none"; // ← contrôlé par SHOW_GUI
 initJointCanvas(canvas.width, canvas.height);
 
 // ─── Settings ─────────────────────────────────────────────────────────────────
@@ -136,7 +136,7 @@ const settings = {
   moleculeLabel: "",
   labelSize: 60,
   labelOpacity: 0.85,
-  labelBottom: 64,  // distance depuis le bas de l'écran (px)
+  labelBottom: 64,  // distance au bas de l'écran
 
   mute: false,
   holyFadeOut: 1.0,   // durée du fade out holy
@@ -153,9 +153,7 @@ const settings = {
   atomScale: 1.15,
 
   // ── Capsules & groupes (hover sur le label) ──────────────────────────────
-  // Tous les paramètres visuels des capsules sont ici — consommés dans drawGroupCapsules().
-  // L'épaisseur du trait lue depuis l'underline CSS
-  // via underlineThicknessPx (calculé au démarrage, voir measureUnderlineThickness() dans ui.js).
+  // utilisé dans drawGroupCapsules().
   capsulePadRatio: 0.2,       // marge autour des atomes : rayon capsule = diam * (1 + ratio)
   capsuleStrokeColor: "rgb(255, 255, 255)", // couleur du contour des capsules au hover
   capsuleFillColor: "black",                   // fond des capsules (cache l'intérieur)
@@ -302,11 +300,9 @@ const settings = {
 };
 
 // ─── Épaisseur underline CSS — synchronisée avec les joints et capsules ───────
-// Mesurée une fois au démarrage (après que les fonts soient chargées si possible).
-// Utilisée comme lineWidth de référence pour joints ET contours de capsules.
 let underlineThicknessPx = 2; // valeur par défaut avant mesure
 
-// Mesurer après le premier frame pour laisser les fonts s'appliquer
+// mesure après application des fonts
 requestAnimationFrame(() => {
   underlineThicknessPx = measureUnderlineThickness();
 });
@@ -589,7 +585,7 @@ function checkMoleculeComplete() {
       playSoundMuted(lastCircle.soundIndex, computeVolume(lastCircle), { detune: computeDetune(lastCircle), reverb: computeReverb(lastCircle), playbackRate: settings.soundPlaybackRate });
       setTimeout(() => { lastCircle.playing = false; }, 500);
     }
-    // addDecorCluster(objects, joints); // commenté — décor désactivé à la complétion
+    // addDecorCluster(objects, joints);
     moleculeComplete = true;
     stopDing(); // ding s'arrête quand molécule complète
   }
